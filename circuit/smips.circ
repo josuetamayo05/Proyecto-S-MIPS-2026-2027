@@ -2836,17 +2836,47 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="facing" val="north"/>
       <a name="label" val="Illegal"/>
     </comp>
+    <comp lib="0" loc="(1190,240)" name="Tunnel">
+      <a name="label" val="S2"/>
+    </comp>
     <comp lib="0" loc="(1230,990)" name="Tunnel">
       <a name="label" val="S_ID"/>
       <a name="width" val="4"/>
     </comp>
-    <comp lib="0" loc="(1330,640)" name="Tunnel">
+    <comp lib="0" loc="(1250,550)" name="Tunnel">
+      <a name="label" val="S10"/>
+    </comp>
+    <comp lib="0" loc="(1270,290)" name="Tunnel">
+      <a name="label" val="S3"/>
+    </comp>
+    <comp lib="0" loc="(1290,860)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="Illegal"/>
+      <a name="label" val="S2"/>
+    </comp>
+    <comp lib="0" loc="(1290,890)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="S3"/>
+    </comp>
+    <comp lib="0" loc="(1290,920)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="S10"/>
     </comp>
     <comp lib="0" loc="(1350,600)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="V0"/>
+      <a name="label" val="V0_11"/>
+    </comp>
+    <comp lib="0" loc="(1350,800)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="ALUOp"/>
+      <a name="width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(1380,390)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="IsJal"/>
+    </comp>
+    <comp lib="0" loc="(1380,780)" name="Constant">
+      <a name="value" val="0x0"/>
+      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(140,130)" name="Pin">
       <a name="appearance" val="NewPins"/>
@@ -2888,13 +2918,14 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="appearance" val="NewPins"/>
       <a name="label" val="Illegal"/>
     </comp>
+    <comp lib="0" loc="(140,580)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="label" val="ALUOp"/>
+      <a name="width" val="3"/>
+    </comp>
     <comp lib="0" loc="(140,90)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="CLK"/>
-    </comp>
-    <comp lib="0" loc="(1400,390)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="IsJal"/>
     </comp>
     <comp lib="0" loc="(150,530)" name="Pin">
       <a name="appearance" val="NewPins"/>
@@ -2997,6 +3028,13 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="type" val="output"/>
       <a name="width" val="2"/>
     </comp>
+    <comp lib="0" loc="(1580,720)" name="Pin">
+      <a name="appearance" val="NewPins"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="ALUControl"/>
+      <a name="type" val="output"/>
+      <a name="width" val="3"/>
+    </comp>
     <comp lib="0" loc="(170,130)" name="Tunnel">
       <a name="label" val="reset"/>
     </comp>
@@ -3033,6 +3071,10 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
     <comp lib="0" loc="(190,530)" name="Tunnel">
       <a name="label" val="V"/>
       <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(190,580)" name="Tunnel">
+      <a name="label" val="ALUOp"/>
+      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(340,920)" name="Constant">
       <a name="value" val="0x3"/>
@@ -3142,7 +3184,7 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(590,530)" name="Constant">
-      <a name="value" val="0x0"/>
+      <a name="value" val="0xd"/>
       <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(590,550)" name="Constant">
@@ -3166,7 +3208,7 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(650,800)" name="Tunnel">
-      <a name="label" val="V0"/>
+      <a name="label" val="V0_10"/>
     </comp>
     <comp lib="0" loc="(670,1000)" name="Tunnel">
       <a name="facing" val="north"/>
@@ -3192,6 +3234,15 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="facing" val="north"/>
       <a name="label" val="IsLoad"/>
     </comp>
+    <comp lib="0" loc="(860,850)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="V"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(860,870)" name="Constant">
+      <a name="value" val="0xb"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="0" loc="(870,470)" name="Tunnel">
       <a name="facing" val="north"/>
       <a name="label" val="CurrentState"/>
@@ -3209,13 +3260,22 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="facing" val="north"/>
       <a name="label" val="IsJr"/>
     </comp>
+    <comp lib="0" loc="(950,860)" name="Tunnel">
+      <a name="label" val="V0_11"/>
+    </comp>
     <comp lib="1" loc="(1210,210)" name="AND Gate">
       <a name="size" val="30"/>
+    </comp>
+    <comp lib="1" loc="(1400,880)" name="OR Gate">
+      <a name="inputs" val="3"/>
     </comp>
     <comp lib="1" loc="(1410,690)" name="OR Gate">
       <a name="size" val="30"/>
     </comp>
     <comp lib="1" loc="(1410,730)" name="OR Gate">
+      <a name="size" val="30"/>
+    </comp>
+    <comp lib="1" loc="(1420,380)" name="AND Gate">
       <a name="size" val="30"/>
     </comp>
     <comp lib="1" loc="(1420,520)" name="OR Gate">
@@ -3230,12 +3290,6 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="inputs" val="4"/>
     </comp>
     <comp lib="1" loc="(1430,590)" name="AND Gate">
-      <a name="size" val="30"/>
-    </comp>
-    <comp lib="1" loc="(1440,380)" name="AND Gate">
-      <a name="size" val="30"/>
-    </comp>
-    <comp lib="1" loc="(1450,630)" name="OR Gate">
       <a name="size" val="30"/>
     </comp>
     <comp lib="1" loc="(1460,230)" name="OR Gate">
@@ -3259,6 +3313,9 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
     </comp>
     <comp lib="2" loc="(1190,990)" name="Multiplexer">
       <a name="width" val="4"/>
+    </comp>
+    <comp lib="2" loc="(1450,790)" name="Multiplexer">
+      <a name="width" val="3"/>
     </comp>
     <comp lib="2" loc="(400,930)" name="Multiplexer">
       <a name="width" val="4"/>
@@ -3286,6 +3343,9 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
       <a name="width" val="4"/>
     </comp>
     <comp lib="3" loc="(620,800)" name="Comparator">
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="3" loc="(930,860)" name="Comparator">
       <a name="width" val="32"/>
     </comp>
     <comp lib="5" loc="(550,30)" name="Register">
@@ -3365,12 +3425,12 @@ S13 = S_HALT (13)</a>
     <wire from="(1110,420)" to="(1110,470)"/>
     <wire from="(1130,260)" to="(1220,260)"/>
     <wire from="(1130,270)" to="(1150,270)"/>
-    <wire from="(1130,280)" to="(1210,280)"/>
+    <wire from="(1130,280)" to="(1180,280)"/>
     <wire from="(1130,290)" to="(1200,290)"/>
     <wire from="(1130,300)" to="(1190,300)"/>
     <wire from="(1130,310)" to="(1340,310)"/>
     <wire from="(1130,320)" to="(1350,320)"/>
-    <wire from="(1130,330)" to="(1360,330)"/>
+    <wire from="(1130,330)" to="(1330,330)"/>
     <wire from="(1130,340)" to="(1370,340)"/>
     <wire from="(1130,350)" to="(1390,350)"/>
     <wire from="(1130,360)" to="(1180,360)"/>
@@ -3385,20 +3445,28 @@ S13 = S_HALT (13)</a>
     <wire from="(1170,1010)" to="(1170,1030)"/>
     <wire from="(1170,390)" to="(1170,620)"/>
     <wire from="(1170,620)" to="(1420,620)"/>
+    <wire from="(1180,240)" to="(1180,280)"/>
+    <wire from="(1180,240)" to="(1190,240)"/>
+    <wire from="(1180,280)" to="(1210,280)"/>
     <wire from="(1180,360)" to="(1180,470)"/>
     <wire from="(1180,360)" to="(1380,360)"/>
     <wire from="(1180,470)" to="(1190,470)"/>
     <wire from="(1190,300)" to="(1190,460)"/>
+    <wire from="(1190,300)" to="(1260,300)"/>
     <wire from="(1190,460)" to="(1380,460)"/>
     <wire from="(1190,470)" to="(1190,700)"/>
-    <wire from="(1190,470)" to="(1380,470)"/>
+    <wire from="(1190,470)" to="(1200,470)"/>
     <wire from="(1190,700)" to="(1380,700)"/>
     <wire from="(1190,990)" to="(1230,990)"/>
     <wire from="(1200,290)" to="(1200,440)"/>
+    <wire from="(1200,290)" to="(1270,290)"/>
     <wire from="(1200,440)" to="(1260,440)"/>
+    <wire from="(1200,470)" to="(1200,550)"/>
+    <wire from="(1200,470)" to="(1380,470)"/>
+    <wire from="(1200,550)" to="(1250,550)"/>
     <wire from="(1210,210)" to="(1370,210)"/>
     <wire from="(1210,280)" to="(1210,430)"/>
-    <wire from="(1210,430)" to="(1250,430)"/>
+    <wire from="(1210,430)" to="(1380,430)"/>
     <wire from="(1220,260)" to="(1220,480)"/>
     <wire from="(1220,260)" to="(1330,260)"/>
     <wire from="(1220,480)" to="(1460,480)"/>
@@ -3406,50 +3474,61 @@ S13 = S_HALT (13)</a>
     <wire from="(1230,370)" to="(1250,370)"/>
     <wire from="(1230,740)" to="(1380,740)"/>
     <wire from="(1240,270)" to="(1240,500)"/>
+    <wire from="(1240,270)" to="(1300,270)"/>
     <wire from="(1240,500)" to="(1240,680)"/>
     <wire from="(1240,500)" to="(1460,500)"/>
     <wire from="(1240,680)" to="(1300,680)"/>
     <wire from="(1250,160)" to="(1250,370)"/>
     <wire from="(1250,160)" to="(1400,160)"/>
-    <wire from="(1250,370)" to="(1300,370)"/>
-    <wire from="(1250,430)" to="(1250,520)"/>
-    <wire from="(1250,430)" to="(1380,430)"/>
+    <wire from="(1250,370)" to="(1390,370)"/>
+    <wire from="(1250,410)" to="(1250,520)"/>
+    <wire from="(1250,410)" to="(1260,410)"/>
     <wire from="(1250,520)" to="(1390,520)"/>
+    <wire from="(1260,300)" to="(1260,410)"/>
     <wire from="(1260,440)" to="(1260,530)"/>
     <wire from="(1260,440)" to="(1380,440)"/>
     <wire from="(1260,530)" to="(1390,530)"/>
     <wire from="(1290,380)" to="(1290,580)"/>
     <wire from="(1290,580)" to="(1400,580)"/>
-    <wire from="(1300,370)" to="(1300,510)"/>
-    <wire from="(1300,370)" to="(1410,370)"/>
+    <wire from="(1290,860)" to="(1350,860)"/>
+    <wire from="(1290,890)" to="(1300,890)"/>
+    <wire from="(1290,920)" to="(1310,920)"/>
+    <wire from="(1300,270)" to="(1300,510)"/>
     <wire from="(1300,510)" to="(1390,510)"/>
     <wire from="(1300,680)" to="(1300,720)"/>
     <wire from="(1300,680)" to="(1380,680)"/>
     <wire from="(1300,720)" to="(1380,720)"/>
+    <wire from="(1300,880)" to="(1300,890)"/>
+    <wire from="(1300,880)" to="(1350,880)"/>
+    <wire from="(1310,900)" to="(1310,920)"/>
+    <wire from="(1310,900)" to="(1350,900)"/>
     <wire from="(1330,150)" to="(1330,260)"/>
     <wire from="(1330,150)" to="(1400,150)"/>
     <wire from="(1330,260)" to="(1330,270)"/>
     <wire from="(1330,270)" to="(1580,270)"/>
-    <wire from="(1330,640)" to="(1420,640)"/>
+    <wire from="(1330,330)" to="(1330,550)"/>
+    <wire from="(1330,330)" to="(1360,330)"/>
+    <wire from="(1330,550)" to="(1580,550)"/>
     <wire from="(1340,220)" to="(1340,310)"/>
     <wire from="(1340,220)" to="(1430,220)"/>
     <wire from="(1350,240)" to="(1350,320)"/>
     <wire from="(1350,240)" to="(1430,240)"/>
-    <wire from="(1350,320)" to="(1350,550)"/>
-    <wire from="(1350,550)" to="(1580,550)"/>
     <wire from="(1350,600)" to="(1400,600)"/>
+    <wire from="(1350,800)" to="(1420,800)"/>
     <wire from="(1360,290)" to="(1360,330)"/>
     <wire from="(1360,290)" to="(1500,290)"/>
-    <wire from="(1360,330)" to="(1470,330)"/>
+    <wire from="(1360,330)" to="(1480,330)"/>
     <wire from="(1370,170)" to="(1370,210)"/>
     <wire from="(1370,170)" to="(1400,170)"/>
     <wire from="(1370,300)" to="(1370,340)"/>
     <wire from="(1370,300)" to="(1500,300)"/>
     <wire from="(1380,190)" to="(1380,360)"/>
     <wire from="(1380,190)" to="(1580,190)"/>
+    <wire from="(1380,390)" to="(1390,390)"/>
+    <wire from="(1380,780)" to="(1420,780)"/>
     <wire from="(1390,320)" to="(1390,350)"/>
     <wire from="(1390,320)" to="(1500,320)"/>
-    <wire from="(1390,350)" to="(1460,350)"/>
+    <wire from="(1390,350)" to="(1470,350)"/>
     <wire from="(140,130)" to="(170,130)"/>
     <wire from="(140,170)" to="(170,170)"/>
     <wire from="(140,210)" to="(170,210)"/>
@@ -3460,30 +3539,38 @@ S13 = S_HALT (13)</a>
     <wire from="(140,410)" to="(170,410)"/>
     <wire from="(140,450)" to="(170,450)"/>
     <wire from="(140,490)" to="(180,490)"/>
+    <wire from="(140,580)" to="(190,580)"/>
     <wire from="(140,90)" to="(170,90)"/>
-    <wire from="(1400,390)" to="(1410,390)"/>
+    <wire from="(1400,880)" to="(1430,880)"/>
     <wire from="(1410,690)" to="(1480,690)"/>
     <wire from="(1410,730)" to="(1430,730)"/>
+    <wire from="(1420,380)" to="(1450,380)"/>
     <wire from="(1420,520)" to="(1530,520)"/>
+    <wire from="(1420,620)" to="(1420,630)"/>
+    <wire from="(1420,630)" to="(1580,630)"/>
     <wire from="(1430,160)" to="(1450,160)"/>
     <wire from="(1430,450)" to="(1440,450)"/>
     <wire from="(1430,590)" to="(1580,590)"/>
     <wire from="(1430,700)" to="(1430,730)"/>
     <wire from="(1430,700)" to="(1480,700)"/>
-    <wire from="(1440,380)" to="(1450,380)"/>
+    <wire from="(1430,810)" to="(1430,880)"/>
     <wire from="(1440,430)" to="(1440,450)"/>
     <wire from="(1440,430)" to="(1580,430)"/>
     <wire from="(1450,150)" to="(1450,160)"/>
     <wire from="(1450,150)" to="(1580,150)"/>
-    <wire from="(1450,380)" to="(1450,410)"/>
-    <wire from="(1450,380)" to="(1480,380)"/>
-    <wire from="(1450,410)" to="(1530,410)"/>
-    <wire from="(1450,630)" to="(1580,630)"/>
+    <wire from="(1450,340)" to="(1450,380)"/>
+    <wire from="(1450,340)" to="(1490,340)"/>
+    <wire from="(1450,380)" to="(1460,380)"/>
+    <wire from="(1450,790)" to="(1530,790)"/>
     <wire from="(1460,230)" to="(1580,230)"/>
-    <wire from="(1460,350)" to="(1460,400)"/>
-    <wire from="(1460,400)" to="(1530,400)"/>
-    <wire from="(1470,330)" to="(1470,370)"/>
-    <wire from="(1470,370)" to="(1480,370)"/>
+    <wire from="(1460,380)" to="(1460,410)"/>
+    <wire from="(1460,380)" to="(1480,380)"/>
+    <wire from="(1460,410)" to="(1530,410)"/>
+    <wire from="(1470,350)" to="(1470,400)"/>
+    <wire from="(1470,400)" to="(1530,400)"/>
+    <wire from="(1480,330)" to="(1480,370)"/>
+    <wire from="(1490,330)" to="(1490,340)"/>
+    <wire from="(1490,330)" to="(1500,330)"/>
     <wire from="(1490,490)" to="(1500,490)"/>
     <wire from="(150,530)" to="(190,530)"/>
     <wire from="(1500,350)" to="(1500,360)"/>
@@ -3492,6 +3579,8 @@ S13 = S_HALT (13)</a>
     <wire from="(1500,480)" to="(1530,480)"/>
     <wire from="(1500,680)" to="(1580,680)"/>
     <wire from="(1530,310)" to="(1580,310)"/>
+    <wire from="(1530,720)" to="(1530,790)"/>
+    <wire from="(1530,720)" to="(1580,720)"/>
     <wire from="(1550,390)" to="(1580,390)"/>
     <wire from="(1550,470)" to="(1580,470)"/>
     <wire from="(340,920)" to="(370,920)"/>
@@ -3576,11 +3665,14 @@ S13 = S_HALT (13)</a>
     <wire from="(810,980)" to="(810,1010)"/>
     <wire from="(830,960)" to="(920,960)"/>
     <wire from="(860,710)" to="(860,730)"/>
+    <wire from="(860,850)" to="(890,850)"/>
+    <wire from="(860,870)" to="(890,870)"/>
     <wire from="(870,430)" to="(870,470)"/>
     <wire from="(880,690)" to="(910,690)"/>
     <wire from="(890,350)" to="(930,350)"/>
     <wire from="(900,980)" to="(920,980)"/>
     <wire from="(930,20)" to="(930,350)"/>
+    <wire from="(930,860)" to="(950,860)"/>
     <wire from="(930,990)" to="(930,1020)"/>
     <wire from="(950,970)" to="(1030,970)"/>
   </circuit>
