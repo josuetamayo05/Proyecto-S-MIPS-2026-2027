@@ -3138,7 +3138,7 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
     </comp>
     <comp lib="0" loc="(550,720)" name="Tunnel">
       <a name="facing" val="north"/>
-      <a name="label" val="V0"/>
+      <a name="label" val="V0_10"/>
     </comp>
     <comp lib="0" loc="(580,140)" name="Tunnel">
       <a name="facing" val="north"/>
@@ -3429,8 +3429,8 @@ S13 = S_HALT (13)</a>
     <wire from="(1130,290)" to="(1200,290)"/>
     <wire from="(1130,300)" to="(1190,300)"/>
     <wire from="(1130,310)" to="(1340,310)"/>
-    <wire from="(1130,320)" to="(1350,320)"/>
-    <wire from="(1130,330)" to="(1330,330)"/>
+    <wire from="(1130,320)" to="(1330,320)"/>
+    <wire from="(1130,330)" to="(1360,330)"/>
     <wire from="(1130,340)" to="(1370,340)"/>
     <wire from="(1130,350)" to="(1390,350)"/>
     <wire from="(1130,360)" to="(1180,360)"/>
@@ -3506,8 +3506,8 @@ S13 = S_HALT (13)</a>
     <wire from="(1330,150)" to="(1400,150)"/>
     <wire from="(1330,260)" to="(1330,270)"/>
     <wire from="(1330,270)" to="(1580,270)"/>
-    <wire from="(1330,330)" to="(1330,550)"/>
-    <wire from="(1330,330)" to="(1360,330)"/>
+    <wire from="(1330,320)" to="(1330,550)"/>
+    <wire from="(1330,320)" to="(1350,320)"/>
     <wire from="(1330,550)" to="(1580,550)"/>
     <wire from="(1340,220)" to="(1340,310)"/>
     <wire from="(1340,220)" to="(1430,220)"/>
