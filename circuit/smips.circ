@@ -1076,20 +1076,12 @@
       <a name="label" val="AC"/>
       <a name="width" val="5"/>
     </comp>
-    <comp lib="0" loc="(1070,240)" name="Tunnel">
-      <a name="label" val="RD1"/>
-      <a name="width" val="32"/>
-    </comp>
     <comp lib="0" loc="(1070,270)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="ReadData1"/>
       <a name="radix" val="16"/>
       <a name="type" val="output"/>
-      <a name="width" val="32"/>
-    </comp>
-    <comp lib="0" loc="(1120,910)" name="Tunnel">
-      <a name="label" val="RD2"/>
       <a name="width" val="32"/>
     </comp>
     <comp lib="0" loc="(1140,940)" name="Pin">
@@ -1333,15 +1325,9 @@ El resto de registros → 0x00000000
 </a>
     </comp>
     <wire from="(1000,430)" to="(1000,490)"/>
-    <wire from="(1020,270)" to="(1040,270)"/>
-    <wire from="(1040,240)" to="(1040,270)"/>
-    <wire from="(1040,240)" to="(1070,240)"/>
-    <wire from="(1040,270)" to="(1070,270)"/>
+    <wire from="(1020,270)" to="(1070,270)"/>
     <wire from="(1050,1100)" to="(1050,1120)"/>
-    <wire from="(1070,940)" to="(1110,940)"/>
-    <wire from="(1110,910)" to="(1110,940)"/>
-    <wire from="(1110,910)" to="(1120,910)"/>
-    <wire from="(1110,940)" to="(1140,940)"/>
+    <wire from="(1070,940)" to="(1140,940)"/>
     <wire from="(130,1360)" to="(170,1360)"/>
     <wire from="(170,1330)" to="(170,1360)"/>
     <wire from="(180,1330)" to="(180,1380)"/>
