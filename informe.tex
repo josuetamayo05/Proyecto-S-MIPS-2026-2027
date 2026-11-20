@@ -1,0 +1,436 @@
+% Informe del proyecto: CPU multiciclo S-MIPS en Logisim Evolution 5.0.0
+% Compilar con: pdflatex informe.tex  (dos veces)
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-noshorthands,es-noquoting,es-tabla]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,babel}
+\usepackage[hidelinks]{hyperref}
+
+\setlist{itemsep=1pt,topsep=3pt}
+\newcommand{\s}[1]{\texttt{#1}}
+\newcommand{\estudiante}{Josué Alejandro Tamayo Ayrado}   
+
+\title{CPU multiciclo S-MIPS en Logisim Evolution\\[2pt]\large Informe del proyecto}
+\author{\estudiante\\\small Arquitectura de Computadoras --- Curso 2026--2027}
+\date{}
+
+\begin{document}
+\maketitle
+
+% =====================================================================
+\section{Datos generales y uso de VHDL}
+
+\begin{itemize}
+\item \textbf{Estudiante:} \estudiante.
+\item \textbf{Componentes en VHDL:} ninguno. Los seis subcircuitos obligatorios
+(\s{Instruction\_Decoder}, \s{Control\_Unit}, \s{Branch\_Control}, \s{Datapath},
+\s{Register\_File} y \s{ALU}) son circuitos nativos de Logisim Evolution 5.0.0.
+\item \textbf{Justificación:} con un diseño 100\,\% nativo la simulación no depende de
+Questa, la batería completa de \s{run\_tests.py} se ejecuta en segundos en lugar de
+minutos, y todas las señales internas se pueden inspeccionar ciclo a ciclo desde la
+propia interfaz de Logisim, lo que facilitó la depuración.
+\end{itemize}
+
+\noindent\textbf{Decisiones de diseño principales.}
+\begin{itemize}
+\item Una única ALU de 8 operaciones calcula $\mathrm{PC}+4$ (en IF), el destino de
+salto (en ID), las direcciones de memoria y las operaciones aritméticas (\textbf{R14}).
+\item El destino de \s{beq}/\s{bne} se calcula de forma especulativa en ID y se guarda
+en \s{ALUOut}; en el estado de salto la ALU compara (resta) y \s{Branch\_Control} decide.
+\item \s{jr} salta ya en ID tomando \s{ReadData1} directamente del banco (2 ciclos).
+\item En \s{syscall} unos multiplexores fuerzan \s{ReadReg1}=2 (\s{\$v0}) y
+\s{ReadReg2}=4 (\s{\$a0}), de modo que A y B contienen \s{\$v0} y \s{\$a0}.
+\item La alineación de bytes de \s{lb}/\s{lbu} se hace \emph{antes} del MDR, y la de
+\s{sb} replica el byte en los cuatro carriles y activa un solo bit de \s{MEM\_BE}.
+\item Todos los elementos secuenciales usan flanco de subida y su reloj es directamente
+\s{CLK} (\textbf{R3}). No hay ningún componente \s{Clock} dentro de la CPU.
+\end{itemize}
+
+% =====================================================================
+\section{Ruta de datos}
+
+\begin{figure}[h]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[x=0.82cm,y=0.82cm,font=\footnotesize,
+  blk/.style={draw,thick,fill=white,minimum height=0.8cm,minimum width=1.1cm,align=center},
+  mux/.style={draw,thick,fill=gray!12,trapezium,trapezium angle=70,shape border rotate=270,
+              minimum height=1.1cm,minimum width=0.5cm,inner sep=1pt,align=center,font=\scriptsize},
+  ctl/.style={red!70!black,font=\scriptsize\itshape},
+  >={Stealth[length=2mm]}]
+
+% ---- bloques ----
+\node[blk] (pc) at (0.6,6) {PC};
+\node[mux] (miord) at (2.3,6) {0\\1};
+\node[blk,dashed,minimum height=2.4cm,minimum width=1.4cm] (mem) at (4.3,6) {Memoria\\(placa)};
+\node[blk] (ir) at (6.8,8.2) {IR};
+\node[blk,minimum width=1.6cm] (bal) at (6.8,4.6) {Alineación\\lb / lbu};
+\node[blk] (mdr) at (8.8,4.6) {MDR};
+\node[mux] (mrd) at (9.0,8.6) {0\\1\\2};
+\node[mux] (mwb) at (9.6,6.4) {0\\1\\2};
+\node[blk,minimum height=2.6cm,minimum width=1.8cm] (rf) at (11.6,7.2) {Banco de\\registros\\32$\times$32};
+\node[blk] (a) at (13.8,8.2) {A};
+\node[blk] (b) at (13.8,6.2) {B};
+\node[mux] (msa) at (15.4,8.2) {0\\1};
+\node[mux,minimum height=1.6cm] (msb) at (15.4,5.8) {0\\1\\2\\3};
+\node[draw,thick,fill=blue!6,minimum height=2.4cm,minimum width=1.1cm] (alu) at (17.0,7.0) {ALU};
+\node[blk] (aluout) at (18.8,7.0) {ALU\\Out};
+\node[blk,minimum width=1.6cm] (ext) at (13.0,3.6) {Ext. signo/\\ceros, $\ll$2};
+\node[blk,minimum width=1.6cm] (jad) at (16.0,3.0) {JAddr};
+\node[mux,minimum height=1.6cm] (mpc) at (18.8,3.4) {0\\1\\2\\3};
+\node[blk,minimum width=1.6cm] (sbl) at (4.3,2.4) {Carriles sb\\WDATA, BE};
+
+% ---- conexiones principales ----
+\draw[->] (pc) -- (miord.west |- pc);
+\draw[->] (miord) -- node[above]{\s{ADDR}} (mem);
+\draw[->] (mem.east) ++(0,0.6) -| ($(ir.west)+(-0.5,0)$) -- (ir.west);
+\draw[->] (mem.east) ++(0,-0.6) -| ($(bal.west)+(-0.5,0)$) -- (bal.west);
+\draw[->] (bal) -- (mdr);
+\draw[->] (ir.east) -- ++(0.6,0) node[right,font=\scriptsize]{rs, rt, rd} ;
+\draw[->] (ir.north) |- ++(0,0.5) -| (mrd.north) node[pos=0.25,above,font=\scriptsize]{rt, rd, 31};
+\draw[->] (mrd.east) -| ($(rf.north)+(-0.4,0)$) node[pos=0.75,right,font=\scriptsize]{WriteReg};
+\draw[->] (mwb) -- node[above,font=\scriptsize]{WBData} (mwb -| rf.west);
+\draw[->] (mdr.east) -| ($(mwb.west)+(-0.3,-0.25)$) -- ($(mwb.west)+(0,-0.25)$);
+\coordinate (rd1) at ($(rf.east)+(0,1.0)$);
+\coordinate (rd2) at ($(rf.east)+(0,-1.0)$);
+\draw[->] (rd1) -- (a.west |- rd1) node[pos=0.4,above,font=\scriptsize]{RD1};
+\draw[->] (rd2) -- (b.west |- rd2) node[pos=0.4,below,font=\scriptsize]{RD2};
+\draw[->] (a) -- (msa);
+\draw[->] (b) -- (b -| msb.west);
+\draw[->] (msa.east) -- (msa.east -| alu.west);
+\draw[->] (msb.east) -- (msb.east -| alu.west);
+\draw[->] (alu) -- node[above,font=\scriptsize]{ALURes} (aluout);
+\draw[->] (ir.south) ++(0.3,0) |- (ext.west) node[pos=0.75,above,font=\scriptsize]{imm16};
+\draw[->] (ext.east) -| ($(msb.west)+(-0.4,-0.6)$) -- ($(msb.west)+(0,-0.6)$);
+\draw[->] (jad.east) -- (jad.east -| mpc.west);
+\draw[->] (mpc.south) |- ($(pc.south)+(0,-4.2)$) -- (pc.south) node[pos=0.0,below right,font=\scriptsize]{PCNext};
+\draw[->] (aluout.south) -- (mpc.north);
+\draw[->] (b.south) ++(-0.3,0) |- ($(sbl.east)+(0,0.2)$);
+\draw[->] (sbl.north) -- ($(mem.south)$);
+
+% ---- señales de control ----
+\node[ctl,above=1pt of pc] {PCWriteFinal};
+\node[ctl,below=1pt of miord] {IorD};
+\node[ctl,above=1pt of ir] {IRWrite};
+\node[ctl,above=1pt of mrd] {RegDst};
+\node[ctl,below=1pt of mwb] {MemToReg};
+\node[ctl,below=1pt of rf] {RegWrite};
+\node[ctl,above=1pt of msa] {ALUSrcA};
+\node[ctl,below=1pt of msb] {ALUSrcB};
+\node[ctl,above=1pt of alu] {ALUControl};
+\node[ctl,right=1pt of mpc] {PCSource};
+\node[ctl,below=1pt of bal] {IsByte, IsUnsigned};
+\node[ctl,below=1pt of ext] {ImmType};
+\node[ctl,below=1pt of sbl] {IsByte};
+\node[ctl,below=1pt of mem] {MEM\_WE};
+\end{tikzpicture}}
+\caption{Ruta de datos multiciclo (esquema simplificado). En rojo, las señales de control.}
+\end{figure}
+
+\noindent\textbf{Registros de estado.} Todos son de 32 bits, se disparan en el flanco de
+subida de \s{CLK} y, salvo PC e IR, cargan en cada ciclo.
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Registro & Habilitación & Reset \\
+\midrule
+PC & \s{PCWriteFinal} (de \s{Branch\_Control}) & asíncrono a 0 \\
+IR & \s{IRWrite} & asíncrono a 0 (\s{nop}) \\
+MDR, A, B, ALUOut & siempre & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Codificación de los multiplexores.}
+
+\begin{center}\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Selector & 0 & 1 & 2 & 3 \\
+\midrule
+\s{IorD} & PC & ALUOut & & \\
+\s{ALUSrcA} & PC & A & & \\
+\s{ALUSrcB} & B & constante 4 & \s{ImmExt} & $\mathrm{SignExt}(imm)\ll 2$ \\
+\s{RegDst} & rt & rd & 31 & \\
+\s{MemToReg} & ALUOut & MDR & PC & \\
+\s{PCSource} & resultado de la ALU & ALUOut & JAddr & \s{ReadData1} (para \s{jr}) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Otros bloques del \s{Datapath}.}
+\begin{itemize}
+\item \textbf{Inmediato:} dos extensores de 16 a 32 bits (signo y ceros) y un MUX
+gobernado por \s{ImmType}; un desplazador fijo de 2 posiciones produce el
+desplazamiento de los saltos.
+\item \textbf{JAddr} $=\{\mathrm{PC}[31{:}28], \mathit{dir}[25{:}0], 00\}$, formado
+solo con separadores. En el estado de salto el PC ya vale $\mathrm{PC}+4$.
+\item \textbf{lb/lbu:} se toma $\mathit{off}=\mathrm{ALUOut}[1{:}0]$; un MUX de 8 bits
+elige el byte \textit{off} de \s{MEM\_RDATA}, dos extensores (signo/ceros) y
+\s{IsUnsigned} lo extienden, y \s{IsByte} elige entre la palabra y el byte extendido
+antes de cargar el MDR.
+\item \textbf{sb:} \s{MEM\_WDATA} $= \{B[7{:}0]\times 4\}$ cuando \s{IsByte}$=1$
+y $B$ en otro caso; \s{MEM\_BE} es la salida de un decodificador 2$\to$4 de
+\textit{off} para \s{sb} y \s{1111} para \s{sw}.
+\item \textbf{syscall:} \s{V0\_Val}$=A$ y \s{A0\_Val}$=B[6{:}0]$ (va al pin \s{TTY\_DATA}).
+\end{itemize}
+
+\noindent\textbf{Banco de registros (\s{Register\_File}).} Tiene 32 registros de 32 bits.
+Un decodificador 5$\to$32, habilitado por \s{RegWrite}, genera la carga de cada registro,
+y dos multiplexores 32:1 implementan los puertos de lectura combinacionales.
+\begin{itemize}
+\item \s{\$zero} tiene la habilitación fija a 0, por lo que siempre vale 0.
+\item \s{\$gp} y \s{\$sp} cargan de forma síncrona 0x1800 y 0x3FFC mientras \s{RESET}$=1$:
+la habilitación es (decodificador OR \s{RESET}) y el dato llega por un MUX gobernado
+por \s{RESET}.
+\item Los otros 29 registros usan el borrado asíncrono.
+\end{itemize}
+
+% =====================================================================
+\section{Máquina de estados}
+
+La \s{Control\_Unit} es una máquina de Moore con un registro de estado de 4 bits
+(borrado asíncrono con \s{RESET}). El próximo estado lo elige un MUX 16:1 indexado por el
+estado actual; para \s{S\_ID} una cadena de multiplexores 2:1 resuelve la clase de
+instrucción. Las salidas salen de un decodificador 4$\to$16 del estado más puertas OR/AND.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[font=\scriptsize,>={Stealth[length=2mm]},
+  st/.style={draw,thick,circle,minimum size=1.15cm,inner sep=0pt,align=center,fill=white},
+  every edge quotes/.style={font=\tiny,fill=white,inner sep=1pt}]
+\node[st,fill=green!10] (if) at (0,0) {S\_IF\\0};
+\node[st] (id) at (0,-2) {S\_ID\\1};
+\node[st] (exr) at (-7,-4.2) {S\_EX\_R\\2};
+\node[st] (exi) at (-5,-4.2) {S\_EX\_I\\3};
+\node[st] (exm) at (-2.6,-4.2) {S\_EX\_M\\4};
+\node[st] (br)  at (-0.2,-4.2) {S\_BR\\10};
+\node[st] (jmp) at (2.0,-4.2) {S\_JUMP\\11};
+\node[st] (sys) at (4.2,-4.2) {S\_SYS\\12};
+\node[st,fill=red!10] (halt) at (6.6,-4.2) {S\_HALT\\13};
+\node[st] (wbr) at (-7,-6.4) {S\_WB\_R\\7};
+\node[st] (wbi) at (-5,-6.4) {S\_WB\_I\\8};
+\node[st] (memr) at (-3.6,-6.4) {S\_MEM\_R\\5};
+\node[st] (memw) at (-1.6,-6.4) {S\_MEM\_W\\6};
+\node[st] (wbm) at (-3.6,-8.4) {S\_WB\_M\\9};
+
+\draw[->] (if) -- (id);
+\draw[->] (id) to node[sloped,above]{tipo R} (exr);
+\draw[->] (id) to node[sloped,above]{tipo I} (exi);
+\draw[->] (id) to node[sloped,above]{load/store} (exm);
+\draw[->] (id) to node[left]{beq/bne} (br);
+\draw[->] (id) to node[sloped,above]{j/jal} (jmp);
+\draw[->] (id) to node[sloped,above]{syscall} (sys);
+\draw[->] (id) to[bend left=10] node[sloped,above]{Illegal} (halt);
+\draw[->] (id.east) to[bend right=40] node[right]{jr} (if.east);
+\draw[->] (exr) -- (wbr);
+\draw[->] (exi) -- (wbi);
+\draw[->] (exm) to node[left]{load} (memr);
+\draw[->] (exm) to node[right]{store} (memw);
+\draw[->] (memr) -- (wbm);
+\draw[->] (sys) to node[above]{\$v0=10} (halt);
+\draw[->] (halt) to[loop right] ();
+\foreach \n in {wbr,wbi,wbm,memw,br,jmp} \node[below=1pt of \n,font=\tiny]{$\to$ S\_IF};
+\node[below=1pt of sys,font=\tiny,align=center]{\$v0$\neq$10\\$\to$ S\_IF};
+\end{tikzpicture}
+\caption{Diagrama de estados. Los estados finales vuelven a \s{S\_IF}.}
+\end{figure}
+
+\noindent En \s{S\_ID} la prioridad, de menor a mayor, es:
+tipo I (por defecto), tipo R, load/store, beq/bne, j/jal, jr, syscall, \s{Illegal}.
+\s{Illegal} gana siempre, porque una palabra ilegal con op$=0$ también activa
+\s{IsRType}. \s{S\_HALT} solo sale con \s{RESET}.
+
+% =====================================================================
+\section{Señales de control por estado}
+
+Las celdas vacías valen 0. \s{ALUOp} es la operación que entrega el decodificador.
+\s{TTY\_WE} se activa en \s{S\_SYS} solo si $\$v0=11$.
+
+\begin{center}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}l*{14}{c}@{}}
+\toprule
+Estado & PCWrite & PCWriteCond & IorD & IRWrite & RegWrite & RegDst & MemToReg & ALUSrcA & ALUSrcB & ALUControl & PCSource & MEM\_WE & TTY\_WE & HALT \\
+\midrule
+0 S\_IF     & 1 &   &   & 1 &   &    &    & 0 & 01 & ADD   & 00 &   &   & \\
+1 S\_ID     & IsJr &   &   &   &   &    &    & 0 & 11 & ADD   & 11 &   &   & \\
+2 S\_EX\_R  &   &   &   &   &   &    &    & 1 & 00 & ALUOp &    &   &   & \\
+3 S\_EX\_I  &   &   &   &   &   &    &    & 1 & 10 & ALUOp &    &   &   & \\
+4 S\_EX\_M  &   &   &   &   &   &    &    & 1 & 10 & ADD   &    &   &   & \\
+5 S\_MEM\_R &   &   & 1 &   &   &    &    &   &    & ADD   &    &   &   & \\
+6 S\_MEM\_W &   &   & 1 &   &   &    &    &   &    & ADD   &    & 1 &   & \\
+7 S\_WB\_R  &   &   &   &   & 1 & 01 & 00 &   &    & ADD   &    &   &   & \\
+8 S\_WB\_I  &   &   &   &   & 1 & 00 & 00 &   &    & ADD   &    &   &   & \\
+9 S\_WB\_M  &   &   &   &   & 1 & 00 & 01 &   &    & ADD   &    &   &   & \\
+10 S\_BR    &   & 1 &   &   &   &    &    & 1 & 00 & ALUOp & 01 &   &   & \\
+11 S\_JUMP  & 1 &   &   &   & IsJal & 10$\cdot$IsJal & 10$\cdot$IsJal &   &    & ADD & 10 &   &   & \\
+12 S\_SYS   &   &   &   &   &   &    &    &   &    & ADD   &    &   & \$v0=11 & \\
+13 S\_HALT  &   &   &   &   &   &    &    &   &    & ADD   &    &   &   & 1 \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\noindent \s{Branch\_Control} calcula
+$\s{PCWriteFinal}=\s{PCWrite}\lor\big(\s{PCWriteCond}\land((\s{IsBeq}\land Z)\lor(\s{IsBne}\land\lnot Z))\big)$.
+Con \s{RESET}$=1$ el estado es \s{S\_IF}: \s{MEM\_WE}=\s{TTY\_WE}=\s{HALT}=0 (\textbf{R6}).
+
+% =====================================================================
+\section{Codificación de la ALU y del decodificador}
+
+\begin{center}\small
+\begin{tabular}{@{}cllcl@{}}
+\toprule
+Código & Operación & Resultado & Código & Operación / Resultado \\
+\midrule
+000 & ADD & $A+B$ & 100 & SLT: $(A<_s B)\,?\,1:0$ \\
+001 & SUB & $A-B$ & 101 & SLL: $B \ll \mathit{shamt}$ \\
+010 & AND & $A\,\&\,B$ & 110 & SRL: $B \gg_l \mathit{shamt}$ \\
+011 & OR  & $A\,|\,B$ & 111 & LUI: $B \ll 16$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent La ALU calcula las 8 operaciones en paralelo (sumador, restador, AND, OR,
+comparador con signo, dos desplazadores por \textit{shamt} y uno fijo de 16) y un MUX 8:1
+elige el resultado. \s{Zero} sale de comparar el resultado con 0. Son el único sumador y el
+único restador de la CPU (\textbf{R14}).
+
+\medskip
+\noindent\textbf{Salidas del \s{Instruction\_Decoder}.} Es combinacional, con dos
+decodificadores 6$\to$64 (op y funct); el de funct solo se habilita cuando op$=0$.
+\s{ImmType}=1 indica extensión con signo, y 0 extensión con ceros (\s{andi}, \s{ori}, \s{lui}).
+\s{Illegal}$=\lnot\s{Legal}$, donde \s{Legal} es la OR de las 25 instrucciones.
+
+\begin{center}\small
+\begin{tabular}{@{}llcll@{}}
+\toprule
+Instrucción & op / funct & ALUOp & ImmType & Flags activos \\
+\midrule
+add, addu, sub, and, or, slt & 00 / 20,21,22,24,25,2A & 000,000,001,010,011,100 & -- & IsRType \\
+sll, srl & 00 / 00, 02 & 101, 110 & -- & IsRType \\
+jr & 00 / 08 & -- & -- & IsRType, IsJr \\
+syscall & 00 / 0C & -- & -- & IsRType, IsSyscall \\
+addi, addiu, slti & 08, 09, 0A & 000, 000, 100 & 1 & (ninguno: tipo I) \\
+andi, ori, lui & 0C, 0D, 0F & 010, 011, 111 & 0 & (ninguno: tipo I) \\
+lw / lb / lbu & 23 / 20 / 24 & 000 & 1 & IsLoad (+IsByte, +IsUnsigned) \\
+sw / sb & 2B / 28 & 000 & 1 & IsStore (+IsByte) \\
+beq / bne & 04 / 05 & 001 & 1 & IsBranch, IsBeq / IsBne \\
+j / jal & 02 / 03 & -- & -- & IsJump (+IsJal) \\
+otra & --- & -- & -- & Illegal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{Ciclos por clase de instrucción}
+
+\begin{center}\small
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Clase & Ciclos & Estados \\
+\midrule
+Tipo R (add, sub, and, or, slt, sll, srl, addu) & 4 & IF, ID, EX\_R, WB\_R \\
+Tipo I (addi, addiu, slti, andi, ori, lui) & 4 & IF, ID, EX\_I, WB\_I \\
+lw, lb, lbu & 5 & IF, ID, EX\_M, MEM\_R, WB\_M \\
+sw, sb & 4 & IF, ID, EX\_M, MEM\_W \\
+beq, bne & 3 & IF, ID, BR \\
+j, jal & 3 & IF, ID, JUMP \\
+jr & 2 & IF, ID \\
+syscall & 3 & IF, ID, SYS (con \$v0=10 pasa a HALT) \\
+Instrucción ilegal & 2 & IF, ID y después HALT \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{Cobertura de los programas de \texttt{tests/}}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}p{3.6cm}p{3.2cm}X@{}}
+\toprule
+Fila de la Tabla 1 & Programa & Cómo se cubre \\
+\midrule
+add, sub & t1\_aritmetica & 1000+234, 1000+($-$300), 1000$-$234, 234$-$($-$300), $-$300$-$1000 \\
+and, or & t1\_aritmetica & 0xF0F0FF00 y 0xFF00F0F0 (unos en los 16 bits altos) \\
+slt, slti & t1\_aritmetica & $-$300<1000 $\to$ 1 y 1000<$-$1 $\to$ 0 (con y sin signo difieren) \\
+sll, srl & t1\_aritmetica & shamt 0 y 4/8/28; srl de 0xF0F0FF00 y de $-$300 \\
+addi & t1\_aritmetica & 1000 + ($-$1001) \\
+addiu, addu & t1\_aritmetica & \s{li} $-$32768, \s{li} 32767, \s{move} y \s{addiu} explícita \\
+andi, ori & t1\_aritmetica & inmediatos 0x8F0F y 0x8421 (bit 15 = 1) \\
+lui & t1\_aritmetica & \s{lui} 0x8001 \\
+lw, sw & t2\_memoria & desplazamientos 8, 12, $-$8 y $-$12 \\
+lb, lbu & t2\_memoria & bytes 0x92, 0xF1, 0x80 en las posiciones 0, 2 y 3 \\
+sb & t2\_memoria & posiciones 0, 1, 2 y 3 de una palabra, con \s{lw} tras cada \s{sb} \\
+beq, bne & t3\_saltos & cada uno tomado y no tomado; bucles hacia atrás con bne y beq \\
+j & t3\_saltos & salto hacia adelante y bucle con \s{j} hacia atrás \\
+jal, jr & t4\_procedimientos & \s{fact} recursivo y \s{sumcuad}, ambos no hoja, con \s{\$ra} en la pila \\
+syscall & todos & servicio 11 en toda la salida y servicio 10 al final \\
+\s{\$zero} & t4\_procedimientos & \s{addi}, \s{add} y \s{addu} sobre \s{\$zero} $\to$ imprime 0 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Resultados y limitaciones}
+
+\noindent\textbf{Resultados de \s{run\_tests.py}} (completo en \s{salida-tests.txt}):
+\textbf{11/11 programas correctos}.
+
+\begin{center}\small
+\begin{tabular}{@{}lr@{\qquad}lr@{}}
+\toprule
+Programa & Ciclos & Programa & Ciclos \\
+\midrule
+programs/arithmetic & 6267 & programs/multiply & 1890 \\
+programs/array\_sum & 880 & tests/t1\_aritmetica & 7207 \\
+programs/branches & 869 & tests/t2\_memoria & 4577 \\
+programs/gcd & 2729 & tests/t3\_saltos & 2116 \\
+programs/hello & 283 & tests/t4\_procedimientos & 2578 \\
+programs/memory & 4778 & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Verificación adicional.}
+\begin{itemize}
+\item Cada subcircuito se probó por separado:
+  \begin{itemize}
+  \item ALU: 200 casos.
+  \item Decodificador: los 4096 pares op/funct.
+  \item Banco de registros: reset, escritura y lectura de los 32 registros.
+  \item Unidad de control: cada clase de instrucción, ciclo a ciclo.
+  \end{itemize}
+\item Con programas codificados a mano se comprobó lo siguiente:
+  \begin{itemize}
+  \item Las instrucciones ilegales (opcode 0x3F, funct 0x01 y opcode 0x0B) detienen la CPU.
+  \item Tras \s{HALT} no cambia nada durante 200 ciclos más.
+  \item \s{nop} y \s{syscall} con \$v0=1 no tienen efecto.
+  \item \s{TTY\_WE} y \s{MEM\_WE} duran exactamente un ciclo por carácter o escritura (\textbf{R4}, \textbf{R5}).
+  \end{itemize}
+\end{itemize}
+
+\noindent\textbf{Limitaciones conocidas.}
+\begin{itemize}
+\item Cuando se detecta una instrucción ilegal o \s{syscall} 10, el PC ya se incrementó
+en IF; ningún registro del banco ni la memoria se modifican.
+\item Accesos a palabra no alineados, saltos a direcciones no múltiplo de 4 y
+desbordamiento aritmético no se tratan; el enunciado deja libre ese comportamiento.
+Un \s{lw}/\s{sw} no alineado accede a la palabra alineada que contiene la dirección.
+\item El reset de \s{\$gp} y \s{\$sp} es síncrono: requiere al menos un flanco de reloj
+con \s{RESET}$=1$, como ocurre en \s{run\_tests.py} y al pulsar Reset con el reloj activo.
+\end{itemize}
+No se conocen otros errores.
+
+\end{document}
