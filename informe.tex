@@ -411,19 +411,20 @@ programs/memory & 4778 & & \\
 
 \noindent\textbf{Verificación adicional.}
 \begin{itemize}
-\item Cada subcircuito se probó por separado:
+\item Cada subcircuito se probó por separado (\s{tools/verify\_blocks.py}):
   \begin{itemize}
   \item ALU: 200 casos.
   \item Decodificador: los 4096 pares op/funct.
   \item Banco de registros: reset, escritura y lectura de los 32 registros.
+  \item \s{Branch\_Control}: las 32 combinaciones de entrada.
   \item Unidad de control: cada clase de instrucción, ciclo a ciclo.
   \end{itemize}
-\item Con programas codificados a mano se comprobó lo siguiente:
+\item Sobre la placa completa (\s{tools/verify\_cpu.py}) se comprobó lo siguiente:
   \begin{itemize}
   \item Las instrucciones ilegales (opcode 0x3F, funct 0x01 y opcode 0x0B) detienen la CPU.
-  \item Tras \s{HALT} no cambia nada durante 200 ciclos más.
+  \item Tras \s{HALT}, el PC, los registros y la RAM no cambian durante 200 ciclos más.
   \item \s{nop} y \s{syscall} con \$v0=1 no tienen efecto.
-  \item \s{TTY\_WE} y \s{MEM\_WE} duran exactamente un ciclo por carácter o escritura (\textbf{R4}, \textbf{R5}).
+  \item \s{TTY\_WE} y \s{MEM\_WE} valen 1 exactamente un ciclo por carácter o escritura; se comparó con un emulador (\textbf{R4}, \textbf{R5}).
   \end{itemize}
 \end{itemize}
 
