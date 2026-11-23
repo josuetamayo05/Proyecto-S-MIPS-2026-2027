@@ -31,6 +31,7 @@
 
 \begin{itemize}
 \item \textbf{Estudiante:} \estudiante.
+\sloppy
 \item \textbf{Componentes en VHDL:} ninguno. Los seis subcircuitos obligatorios
 (\s{Instruction\_Decoder}, \s{Control\_Unit}, \s{Branch\_Control}, \s{Datapath},
 \s{Register\_File} y \s{ALU}) son circuitos nativos de Logisim Evolution 5.0.0.
@@ -58,82 +59,90 @@ en \s{ALUOut}; en el estado de salto la ALU compara (resta) y \s{Branch\_Control
 % =====================================================================
 \section{Ruta de datos}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
+% MUX: \muxn{x}{y}{semialtura}{control}{i/etiqueta,...}{separacion}{y de la entrada 0}
+\newcommand{\muxn}[7]{%
+  \draw[thick,fill=gray!12] (#1,#2+#3) -- ++(0.8,-0.3) -- (#1+0.8,#2-#3+0.3) -- (#1,#2-#3) -- cycle;
+  \node[ctl,anchor=south] at (#1+0.4,#2+#3) {#4};
+  \foreach \i/\t in {#5} {
+    \node[font=\scriptsize,anchor=west,inner sep=2pt] at (#1,#2+#7-\i*#6) {\i};
+    \draw[->] (#1-0.6,#2+#7-\i*#6) node[anchor=east,inner sep=2pt]{\t} -- (#1,#2+#7-\i*#6);}}
 \resizebox{\linewidth}{!}{%
-\begin{tikzpicture}[x=0.82cm,y=0.82cm,font=\footnotesize,
-  blk/.style={draw,thick,fill=white,minimum height=0.8cm,minimum width=1.1cm,align=center},
-  mux/.style={draw,thick,fill=gray!12,trapezium,trapezium angle=70,shape border rotate=270,
-              minimum height=1.1cm,minimum width=0.5cm,inner sep=1pt,align=center,font=\scriptsize},
-  ctl/.style={red!70!black,font=\scriptsize\itshape},
+\begin{tikzpicture}[font=\footnotesize,
+  blk/.style={draw,thick,fill=white,minimum height=0.9cm,minimum width=1.5cm,align=center},
+  ctl/.style={text=red!70!black,font=\scriptsize\itshape},
   >={Stealth[length=2mm]}]
 
-% ---- bloques ----
-\node[blk] (pc) at (0.6,6) {PC};
-\node[mux] (miord) at (2.3,6) {0\\1};
-\node[blk,dashed,minimum height=2.4cm,minimum width=1.4cm] (mem) at (4.3,6) {Memoria\\(placa)};
-\node[blk] (ir) at (6.8,8.2) {IR};
-\node[blk,minimum width=1.6cm] (bal) at (6.8,4.6) {Alineación\\lb / lbu};
-\node[blk] (mdr) at (8.8,4.6) {MDR};
-\node[mux] (mrd) at (9.0,8.6) {0\\1\\2};
-\node[mux] (mwb) at (9.6,6.4) {0\\1\\2};
-\node[blk,minimum height=2.6cm,minimum width=1.8cm] (rf) at (11.6,7.2) {Banco de\\registros\\32$\times$32};
-\node[blk] (a) at (13.8,8.2) {A};
-\node[blk] (b) at (13.8,6.2) {B};
-\node[mux] (msa) at (15.4,8.2) {0\\1};
-\node[mux,minimum height=1.6cm] (msb) at (15.4,5.8) {0\\1\\2\\3};
-\node[draw,thick,fill=blue!6,minimum height=2.4cm,minimum width=1.1cm] (alu) at (17.0,7.0) {ALU};
-\node[blk] (aluout) at (18.8,7.0) {ALU\\Out};
-\node[blk,minimum width=1.6cm] (ext) at (13.0,3.6) {Ext. signo/\\ceros, $\ll$2};
-\node[blk,minimum width=1.6cm] (jad) at (16.0,3.0) {JAddr};
-\node[mux,minimum height=1.6cm] (mpc) at (18.8,3.4) {0\\1\\2\\3};
-\node[blk,minimum width=1.6cm] (sbl) at (4.3,2.4) {Carriles sb\\WDATA, BE};
-
-% ---- conexiones principales ----
-\draw[->] (pc) -- (miord.west |- pc);
-\draw[->] (miord) -- node[above]{\s{ADDR}} (mem);
-\draw[->] (mem.east) ++(0,0.6) -| ($(ir.west)+(-0.5,0)$) -- (ir.west);
-\draw[->] (mem.east) ++(0,-0.6) -| ($(bal.west)+(-0.5,0)$) -- (bal.west);
-\draw[->] (bal) -- (mdr);
-\draw[->] (ir.east) -- ++(0.6,0) node[right,font=\scriptsize]{rs, rt, rd} ;
-\draw[->] (ir.north) |- ++(0,0.5) -| (mrd.north) node[pos=0.25,above,font=\scriptsize]{rt, rd, 31};
-\draw[->] (mrd.east) -| ($(rf.north)+(-0.4,0)$) node[pos=0.75,right,font=\scriptsize]{WriteReg};
-\draw[->] (mwb) -- node[above,font=\scriptsize]{WBData} (mwb -| rf.west);
-\draw[->] (mdr.east) -| ($(mwb.west)+(-0.3,-0.25)$) -- ($(mwb.west)+(0,-0.25)$);
-\coordinate (rd1) at ($(rf.east)+(0,1.0)$);
-\coordinate (rd2) at ($(rf.east)+(0,-1.0)$);
-\draw[->] (rd1) -- (a.west |- rd1) node[pos=0.4,above,font=\scriptsize]{RD1};
-\draw[->] (rd2) -- (b.west |- rd2) node[pos=0.4,below,font=\scriptsize]{RD2};
-\draw[->] (a) -- (msa);
-\draw[->] (b) -- (b -| msb.west);
-\draw[->] (msa.east) -- (msa.east -| alu.west);
-\draw[->] (msb.east) -- (msb.east -| alu.west);
-\draw[->] (alu) -- node[above,font=\scriptsize]{ALURes} (aluout);
-\draw[->] (ir.south) ++(0.3,0) |- (ext.west) node[pos=0.75,above,font=\scriptsize]{imm16};
-\draw[->] (ext.east) -| ($(msb.west)+(-0.4,-0.6)$) -- ($(msb.west)+(0,-0.6)$);
-\draw[->] (jad.east) -- (jad.east -| mpc.west);
-\draw[->] (mpc.south) |- ($(pc.south)+(0,-4.2)$) -- (pc.south) node[pos=0.0,below right,font=\scriptsize]{PCNext};
-\draw[->] (aluout.south) -- (mpc.north);
-\draw[->] (b.south) ++(-0.3,0) |- ($(sbl.east)+(0,0.2)$);
-\draw[->] (sbl.north) -- ($(mem.south)$);
-
-% ---- señales de control ----
+% ---- fila 1: PC, memoria, IR y MDR ----
+\node[blk] (pc) at (1.9,0) {PC};
 \node[ctl,above=1pt of pc] {PCWriteFinal};
-\node[ctl,below=1pt of miord] {IorD};
+\draw[->] (0.4,0) node[left]{PCNext} -- (pc);
+\draw[->] (pc.east) -- ++(0.5,0) node[right]{PC};
+\muxn{6.0}{0}{0.9}{IorD}{0/PC,1/ALUOut}{0.7}{0.35}
+\node[blk,dashed,minimum height=2.2cm,minimum width=2.2cm] (mem) at (10,0) {Memoria\\(placa)};
+\draw[->] (6.8,0) -- node[above]{MEM\_ADDR} (mem);
+\node[ctl,above=1pt of mem] {MEM\_WE};
+\node[blk] (ir) at (15.4,0.8) {IR};
 \node[ctl,above=1pt of ir] {IRWrite};
-\node[ctl,above=1pt of mrd] {RegDst};
-\node[ctl,below=1pt of mwb] {MemToReg};
-\node[ctl,below=1pt of rf] {RegWrite};
-\node[ctl,above=1pt of msa] {ALUSrcA};
-\node[ctl,below=1pt of msb] {ALUSrcB};
-\node[ctl,above=1pt of alu] {ALUControl};
-\node[ctl,right=1pt of mpc] {PCSource};
-\node[ctl,below=1pt of bal] {IsByte, IsUnsigned};
-\node[ctl,below=1pt of ext] {ImmType};
+\node[blk,minimum width=2cm] (bal) at (15.6,-1.3) {Alineación\\lb / lbu};
+\node[ctl,below=1pt of bal] {IsByte, IsUnsigned, ALUOut[1:0]};
+\draw (mem.east) -- node[above]{MEM\_RDATA} (13.9,0);
+\draw[->] (13.9,0) |- (ir.west);
+\draw[->] (13.9,0) |- (bal.west);
+\draw[->] (ir.east) -- ++(0.7,0) node[right,align=left]{op, funct, rs, rt, rd,\\shamt, imm16, dir};
+\node[blk] (mdr) at (18.9,-1.3) {MDR};
+\draw[->] (bal) -- node[above]{MDRIn} (mdr);
+\draw[->] (mdr.east) -- ++(0.6,0) node[right]{MDR};
+\node[blk,minimum width=2.2cm] (sbl) at (10,-2.9) {Carriles de sb};
 \node[ctl,below=1pt of sbl] {IsByte};
-\node[ctl,below=1pt of mem] {MEM\_WE};
+\draw[->] (sbl) -- node[right,align=left,font=\scriptsize]{MEM\_WDATA\\MEM\_BE} (mem);
+\draw[->] (8,-2.9) node[left]{B, ALUOut[1:0]} -- (sbl);
+
+% ---- fila 2: banco de registros ----
+\muxn{2.2}{-5.3}{0.8}{IsSyscall}{0/rs,1/{\$v0 (2)}}{0.6}{0.3}
+\muxn{2.2}{-7.5}{0.8}{IsSyscall}{0/rt,1/{\$a0 (4)}}{0.6}{0.3}
+\muxn{2.2}{-9.9}{1.0}{RegDst}{0/rt,1/rd,2/{\$ra (31)}}{0.55}{0.55}
+\muxn{2.2}{-12.5}{1.0}{MemToReg}{0/ALUOut,1/MDR,2/PC}{0.55}{0.55}
+\node[blk,minimum width=2.6cm,minimum height=8.6cm] (rf) at (7.4,-8.9) {Banco de\\registros\\$32\times 32$};
+\node[ctl,above=1pt of rf] {RegWrite};
+\foreach \y/\t in {-5.3/ReadReg1,-7.5/ReadReg2,-9.9/WriteReg,-12.5/WBData}
+  \draw[->] (3.0,\y) -- node[above]{\t} (6.1,\y);
+\node[blk] (a) at (11.5,-5.9) {A};
+\node[blk] (b) at (11.5,-7.9) {B};
+\draw[->] (8.7,-5.9) -- node[above]{RD1} (a);
+\draw[->] (8.7,-7.9) -- node[above]{RD2} (b);
+\draw[->] (a.east) -- ++(0.6,0) node[right]{A\quad (\s{V0\_Val})};
+\draw[->] (b.east) -- ++(0.6,0) node[right]{B\quad (\s{A0\_Val} = B[6:0])};
+\node[blk,minimum width=3cm] (ext) at (13.4,-10) {Extensión signo/ceros};
+\node[ctl,above=1pt of ext] {ImmType};
+\draw[->] (11.2,-10) node[left]{imm16} -- (ext);
+\draw[->] (ext.east) -- ++(0.6,0) node[right]{ImmExt};
+\node[blk,minimum width=3cm] (shl) at (13.4,-11.4) {Ext. signo, $\ll 2$};
+\draw[->] (11.2,-11.4) node[left]{imm16} -- (shl);
+\draw[->] (shl.east) -- ++(0.6,0) node[right]{ImmSh};
+\node[blk,minimum width=3cm] (jad) at (13.4,-12.8) {Concatenación};
+\draw[->] (11.2,-12.8) node[left]{PC[31:28], dir} -- (jad);
+\draw[->] (jad.east) -- ++(0.6,0) node[right]{JAddr};
+
+% ---- fila 3: ALU y siguiente PC ----
+\muxn{2.2}{-15.4}{0.8}{ALUSrcA}{0/PC,1/A}{0.6}{0.3}
+\muxn{2.2}{-18.2}{1.3}{ALUSrcB}{0/B,1/4,2/ImmExt,3/ImmSh}{0.55}{0.825}
+\draw[thick,fill=blue!6] (5.6,-14.6) -- (7.4,-15.6) -- (7.4,-18.0) -- (5.6,-19.0) -- (5.6,-17.2) -- (6.0,-16.8) -- (5.6,-16.4) -- cycle;
+\node at (6.7,-16.8) {ALU};
+\draw[->] (6.6,-14.3) node[ctl,above]{ALUControl} -- (6.6,-15.15);
+\draw[->] (3.0,-15.4) -- node[above]{SrcA} (5.6,-15.4);
+\draw[->] (3.0,-18.2) -- node[above]{SrcB} (5.6,-18.2);
+\draw[->] (6.6,-19.5) node[below]{shamt} -- (6.6,-18.45);
+\node[blk] (aluout) at (10.8,-16.4) {ALUOut};
+\draw[->] (7.4,-16.4) -- node[above]{ALURes} (aluout);
+\draw[->] (aluout.east) -- ++(0.6,0) node[right]{ALUOut};
+\draw[->] (7.4,-17.6) -- ++(1,0) node[right]{Zero (a \s{Branch\_Control})};
+\muxn{16.4}{-16.6}{1.3}{PCSource}{0/ALURes,1/ALUOut,2/JAddr,3/RD1}{0.55}{0.825}
+\draw[->] (17.2,-16.6) -- ++(0.7,0) node[right]{PCNext};
 \end{tikzpicture}}
-\caption{Ruta de datos multiciclo (esquema simplificado). En rojo, las señales de control.}
+\caption{Ruta de datos multiciclo. En rojo cursiva, las señales de control. Las señales
+con el mismo nombre están conectadas, igual que los túneles del circuito.}
 \end{figure}
 
 \noindent\textbf{Registros de estado.} Todos son de 32 bits, se disparan en el flanco de
@@ -199,51 +208,48 @@ por \s{RESET}.
 % =====================================================================
 \section{Máquina de estados}
 
-La \s{Control\_Unit} es una máquina de Moore con un registro de estado de 4 bits
+La \s{Control\_Unit} es una máquina de estados con un registro de estado de 4 bits
 (borrado asíncrono con \s{RESET}). El próximo estado lo elige un MUX 16:1 indexado por el
 estado actual; para \s{S\_ID} una cadena de multiplexores 2:1 resuelve la clase de
 instrucción. Las salidas salen de un decodificador 4$\to$16 del estado más puertas OR/AND.
+Casi todas dependen solo del estado (Moore); las siguientes dependen además de las entradas (Mealy):
+\s{PCWrite} en \s{S\_ID} (\s{IsJr}), \s{RegWrite}, \s{RegDst} y \s{MemToReg} en \s{S\_JUMP}
+(\s{IsJal}), \s{TTY\_WE} en \s{S\_SYS} (\$v0$=11$) y \s{ALUControl} (\s{ALUOp}).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[font=\scriptsize,>={Stealth[length=2mm]},
-  st/.style={draw,thick,circle,minimum size=1.15cm,inner sep=0pt,align=center,fill=white},
-  every edge quotes/.style={font=\tiny,fill=white,inner sep=1pt}]
-\node[st,fill=green!10] (if) at (0,0) {S\_IF\\0};
-\node[st] (id) at (0,-2) {S\_ID\\1};
-\node[st] (exr) at (-7,-4.2) {S\_EX\_R\\2};
-\node[st] (exi) at (-5,-4.2) {S\_EX\_I\\3};
-\node[st] (exm) at (-2.6,-4.2) {S\_EX\_M\\4};
-\node[st] (br)  at (-0.2,-4.2) {S\_BR\\10};
-\node[st] (jmp) at (2.0,-4.2) {S\_JUMP\\11};
-\node[st] (sys) at (4.2,-4.2) {S\_SYS\\12};
-\node[st,fill=red!10] (halt) at (6.6,-4.2) {S\_HALT\\13};
-\node[st] (wbr) at (-7,-6.4) {S\_WB\_R\\7};
-\node[st] (wbi) at (-5,-6.4) {S\_WB\_I\\8};
-\node[st] (memr) at (-3.6,-6.4) {S\_MEM\_R\\5};
-\node[st] (memw) at (-1.6,-6.4) {S\_MEM\_W\\6};
-\node[st] (wbm) at (-3.6,-8.4) {S\_WB\_M\\9};
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[font=\footnotesize,>={Stealth[length=2mm]},
+  st/.style={draw,thick,rounded corners=4pt,minimum width=1.75cm,minimum height=0.95cm,align=center,fill=white},
+  ret/.style={font=\scriptsize,align=center}]
+\node[st,fill=green!10] (if) at (3.4,0) {S\_IF\\0};
+\node[st] (id) at (7.8,0) {S\_ID\\1};
+\foreach \n/\x/\t in {exr/0/{S\_EX\_R\\2},exi/2.6/{S\_EX\_I\\3},exm/5.6/{S\_EX\_M\\4},br/8.6/{S\_BR\\10},jmp/11.2/{S\_JUMP\\11},sys/13.8/{S\_SYS\\12}}
+  \node[st] (\n) at (\x,-3) {\t};
+\node[st,fill=red!10] (halt) at (17.2,-3) {S\_HALT\\13};
+\node[st] (wbr) at (0,-5.4) {S\_WB\_R\\7};
+\node[st] (wbi) at (2.6,-5.4) {S\_WB\_I\\8};
+\node[st] (memr) at (5.0,-5.4) {S\_MEM\_R\\5};
+\node[st] (memw) at (7.5,-5.4) {S\_MEM\_W\\6};
+\node[st] (wbm) at (5.0,-7.5) {S\_WB\_M\\9};
 
 \draw[->] (if) -- (id);
-\draw[->] (id) to node[sloped,above]{tipo R} (exr);
-\draw[->] (id) to node[sloped,above]{tipo I} (exi);
-\draw[->] (id) to node[sloped,above]{load/store} (exm);
-\draw[->] (id) to node[left]{beq/bne} (br);
-\draw[->] (id) to node[sloped,above]{j/jal} (jmp);
-\draw[->] (id) to node[sloped,above]{syscall} (sys);
-\draw[->] (id) to[bend left=10] node[sloped,above]{Illegal} (halt);
-\draw[->] (id.east) to[bend right=40] node[right]{jr} (if.east);
+\draw[->] (id.north) -- ++(0,0.5) -| node[pos=0.25,above]{jr} (if.north);
+\draw (id.south) -- (7.8,-1.2);
+\draw (0,-1.2) -- (17.2,-1.2);
+\foreach \n/\t in {exr/tipo R,exi/tipo I,exm/{load/store},br/{beq/bne},jmp/{j/jal},sys/syscall,halt/Illegal}
+  \draw[->] (\n |- 0,-1.2) -- node[right]{\t} (\n.north);
 \draw[->] (exr) -- (wbr);
 \draw[->] (exi) -- (wbi);
-\draw[->] (exm) to node[left]{load} (memr);
-\draw[->] (exm) to node[right]{store} (memw);
+\draw[->] (exm.south) -- ++(0,-0.45) -| node[pos=0.75,left]{load} (memr.north);
+\draw[->] (exm.south) -- ++(0,-0.45) -| node[pos=0.75,right]{store} (memw.north);
 \draw[->] (memr) -- (wbm);
-\draw[->] (sys) to node[above]{\$v0=10} (halt);
-\draw[->] (halt) to[loop right] ();
-\foreach \n in {wbr,wbi,wbm,memw,br,jmp} \node[below=1pt of \n,font=\tiny]{$\to$ S\_IF};
-\node[below=1pt of sys,font=\tiny,align=center]{\$v0$\neq$10\\$\to$ S\_IF};
-\end{tikzpicture}
-\caption{Diagrama de estados. Los estados finales vuelven a \s{S\_IF}.}
+\draw[->] (sys) -- node[above]{\$v0 = 10} (halt);
+\draw[->] (halt.south west) ++(0.4,0) -- ++(0,-0.5) -| node[pos=0.25,below]{hasta \s{RESET}} ([xshift=-0.4cm]halt.south east);
+\foreach \n in {wbr,wbi,wbm,memw,br,jmp} \node[ret,below=2pt of \n]{$\to$ S\_IF};
+\node[ret,below=2pt of sys]{\$v0 $\neq$ 10\\$\to$ S\_IF};
+\end{tikzpicture}}
+\caption{Diagrama de estados. Los estados marcados con $\to$ S\_IF vuelven al estado inicial.}
 \end{figure}
 
 \noindent En \s{S\_ID} la prioridad, de menor a mayor, es:
@@ -255,7 +261,7 @@ tipo I (por defecto), tipo R, load/store, beq/bne, j/jal, jr, syscall, \s{Illega
 \section{Señales de control por estado}
 
 Las celdas vacías valen 0. \s{ALUOp} es la operación que entrega el decodificador.
-\s{TTY\_WE} se activa en \s{S\_SYS} solo si $\$v0=11$.
+\s{TTY\_WE} se activa en \s{S\_SYS} solo si \s{\$v0}$=11$.
 
 \begin{center}
 \scriptsize\setlength{\tabcolsep}{3pt}
@@ -313,7 +319,7 @@ decodificadores 6$\to$64 (op y funct); el de funct solo se habilita cuando op$=0
 \s{ImmType}=1 indica extensión con signo, y 0 extensión con ceros (\s{andi}, \s{ori}, \s{lui}).
 \s{Illegal}$=\lnot\s{Legal}$, donde \s{Legal} es la OR de las 25 instrucciones.
 
-\begin{center}\small
+\begin{center}\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}llcll@{}}
 \toprule
 Instrucción & op / funct & ALUOp & ImmType & Flags activos \\
