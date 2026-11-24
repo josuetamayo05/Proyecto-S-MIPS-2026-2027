@@ -938,16 +938,6 @@ Datapath: PC, IR, MDR, A, B, ALUOut, banco de registros, ALU y lógica de bytes<
     </comp>
     <comp lib="0" loc="(900,310)" name="Tunnel">
       <a name="facing" val="north"/>
-      <a name="label" val="ALU"/>
-      <a name="width" val="3"/>
-    </comp>
-    <comp lib="0" loc="(960,460)" name="Tunnel">
-      <a name="facing" val="south"/>
-      <a name="label" val="ALU"/>
-      <a name="width" val="3"/>
-    </comp>
-    <comp lib="0" loc="(960,490)" name="Tunnel">
-      <a name="facing" val="north"/>
       <a name="label" val="ALUControl"/>
       <a name="width" val="3"/>
     </comp>
@@ -997,32 +987,31 @@ ALUControl: 000 ADD, 001 SUB, 010 AND, 011 OR, 100 SLT, 101 SLL, 110 SRL, 111 LU
 SLL/SRL desplazan B por shamt; LUI = B &lt;&lt; 16
 Zero = 1 si Result = 0 (lo usa Branch_Control en beq/bne)</a>
     </comp>
-    <comp lib="7" loc="(655,473)" name="Text">
-      <a name="text" val="OR"/>
-    </comp>
-    <comp lib="7" loc="(658,219)" name="Text">
+    <comp lib="7" loc="(655,215)" name="Text">
       <a name="text" val="ADD"/>
     </comp>
-    <comp lib="7" loc="(658,307)" name="Text">
+    <comp lib="7" loc="(655,305)" name="Text">
       <a name="text" val="SUB"/>
     </comp>
-    <comp lib="7" loc="(658,552)" name="Text">
+    <comp lib="7" loc="(655,470)" name="Text">
+      <a name="text" val="OR"/>
+    </comp>
+    <comp lib="7" loc="(655,550)" name="Text">
       <a name="text" val="SLT"/>
     </comp>
-    <comp lib="7" loc="(658,629)" name="Text">
+    <comp lib="7" loc="(655,625)" name="Text">
       <a name="text" val="SLL"/>
     </comp>
-    <comp lib="7" loc="(660,701)" name="Text">
-      <a name="text" val="SRL"/>
-    </comp>
-    <comp lib="7" loc="(660,777)" name="Text">
-      <a name="text" val="LUI"/>
-    </comp>
-    <comp lib="7" loc="(661,386)" name="Text">
+    <comp lib="7" loc="(660,385)" name="Text">
       <a name="text" val="AND"/>
     </comp>
+    <comp lib="7" loc="(660,700)" name="Text">
+      <a name="text" val="SRL"/>
+    </comp>
+    <comp lib="7" loc="(660,775)" name="Text">
+      <a name="text" val="LUI"/>
+    </comp>
     <wire from="(1030,290)" to="(1030,300)"/>
-    <wire from="(1060,280)" to="(1070,280)"/>
     <wire from="(1070,280)" to="(1100,280)"/>
     <wire from="(1170,220)" to="(1230,220)"/>
     <wire from="(1210,280)" to="(1230,280)"/>
@@ -1092,7 +1081,6 @@ Zero = 1 si Result = 0 (lo usa Branch_Control en beq/bne)</a>
     <wire from="(790,250)" to="(880,250)"/>
     <wire from="(900,260)" to="(900,310)"/>
     <wire from="(920,220)" to="(970,220)"/>
-    <wire from="(960,460)" to="(960,490)"/>
     <wire from="(970,220)" to="(970,270)"/>
     <wire from="(970,220)" to="(990,220)"/>
     <wire from="(970,270)" to="(1030,270)"/>
@@ -3348,11 +3336,11 @@ $zero: enable fijo a 0, siempre vale 0</a>
       <a name="label" val="Opcode"/>
       <a name="width" val="6"/>
     </comp>
-    <comp lib="0" loc="(1120,510)" name="Tunnel">
+    <comp lib="0" loc="(1090,510)" name="Tunnel">
       <a name="label" val="imm16"/>
       <a name="width" val="16"/>
     </comp>
-    <comp lib="0" loc="(1120,580)" name="Tunnel">
+    <comp lib="0" loc="(1100,580)" name="Tunnel">
       <a name="label" val="JumpTarget"/>
       <a name="width" val="26"/>
     </comp>
@@ -4497,7 +4485,7 @@ $zero: enable fijo a 0, siempre vale 0</a>
       <a name="label" val="ALUOut"/>
       <a name="width" val="32"/>
     </comp>
-    <comp lib="7" loc="(1093,1645)" name="Text">
+    <comp lib="7" loc="(1090,1645)" name="Text">
       <a name="font" val="SansSerif bold 18"/>
       <a name="text" val="syscall lee $v0 (2)"/>
     </comp>
@@ -4506,11 +4494,11 @@ $zero: enable fijo a 0, siempre vale 0</a>
       <a name="text">elige el byte con d[1:0]
 </a>
     </comp>
-    <comp lib="7" loc="(1398,1440)" name="Text">
+    <comp lib="7" loc="(1395,1440)" name="Text">
       <a name="font" val="SansSerif bold 18"/>
       <a name="text" val="Escritura (sb/sw)"/>
     </comp>
-    <comp lib="7" loc="(1432,1956)" name="Text">
+    <comp lib="7" loc="(1430,1955)" name="Text">
       <a name="font" val="SansSerif bold 20"/>
       <a name="text" val="0=los 4 bytes 1=solo uno"/>
     </comp>
@@ -4523,11 +4511,11 @@ $zero: enable fijo a 0, siempre vale 0</a>
     <comp lib="7" loc="(1520,440)" name="Text">
       <a name="text" val="Hacia el Control/ Branch Control"/>
     </comp>
-    <comp lib="7" loc="(1531,1694)" name="Text">
+    <comp lib="7" loc="(1530,1690)" name="Text">
       <a name="font" val="SansSerif bold 17"/>
       <a name="text" val="0=palabra 1=byte "/>
     </comp>
-    <comp lib="7" loc="(1532,1715)" name="Text">
+    <comp lib="7" loc="(1530,1715)" name="Text">
       <a name="font" val="SansSerif bold 17"/>
       <a name="text" val="repetido ×4"/>
     </comp>
@@ -4537,46 +4525,52 @@ $zero: enable fijo a 0, siempre vale 0</a>
     <comp lib="7" loc="(1795,1305)" name="Text">
       <a name="text" val="Lectura (lb/lbu)"/>
     </comp>
-    <comp lib="7" loc="(1821,1951)" name="Text">
+    <comp lib="7" loc="(1820,1950)" name="Text">
       <a name="font" val="SansSerif bold 20"/>
       <a name="text" val="0=lw 1=lb/lbu"/>
     </comp>
     <comp lib="7" loc="(185,320)" name="Text">
       <a name="text" val="Memoria"/>
     </comp>
-    <comp lib="7" loc="(324,1254)" name="Text">
+    <comp lib="7" loc="(320,1250)" name="Text">
       <a name="text" val="0=PC+4 (ALU) 1=beq/bne (ALUOut) 2=j/jal 3=jr"/>
     </comp>
-    <comp lib="7" loc="(488,661)" name="Text">
+    <comp lib="7" loc="(355,2170)" name="Text">
+      <a name="text">B (el registro rt) Operar o comparar dos registros
+El número 4 PC + 4
+Inmediato extendido addi, ori, lw, sw…
+Inmediato × 4 Destino de beq/bne</a>
+    </comp>
+    <comp lib="7" loc="(485,660)" name="Text">
       <a name="text" val="2=PC (jal)"/>
     </comp>
-    <comp lib="7" loc="(496,704)" name="Text">
-      <a name="text" val="0=PC 1=A"/>
-    </comp>
-    <comp lib="7" loc="(497,753)" name="Text">
-      <a name="text" val="0=B 1=4 2=inmediato"/>
-    </comp>
-    <comp lib="7" loc="(498,1094)" name="Text">
+    <comp lib="7" loc="(495,1090)" name="Text">
       <a name="font" val="SansSerif bold 18"/>
       <a name="text" val="0=ceros 1=signo"/>
     </comp>
-    <comp lib="7" loc="(499,642)" name="Text">
+    <comp lib="7" loc="(495,640)" name="Text">
       <a name="text" val="0=ALUOut 1=MDR "/>
     </comp>
-    <comp lib="7" loc="(501,600)" name="Text">
+    <comp lib="7" loc="(495,700)" name="Text">
+      <a name="text" val="0=PC 1=A"/>
+    </comp>
+    <comp lib="7" loc="(495,750)" name="Text">
+      <a name="text" val="0=B 1=4 2=inmediato"/>
+    </comp>
+    <comp lib="7" loc="(500,600)" name="Text">
       <a name="text" val="0=rt 1=rd 2=$ra (31)"/>
     </comp>
-    <comp lib="7" loc="(501,780)" name="Text">
+    <comp lib="7" loc="(500,780)" name="Text">
       <a name="text" val="3=imm&lt;&lt;2"/>
     </comp>
-    <comp lib="7" loc="(507,1038)" name="Text">
+    <comp lib="7" loc="(505,1035)" name="Text">
       <a name="font" val="SansSerif bold 17"/>
       <a name="text" val="0=lb (signo) 1=lbu (ceros)"/>
     </comp>
-    <comp lib="7" loc="(582,1254)" name="Text">
+    <comp lib="7" loc="(580,1250)" name="Text">
       <a name="text" val="PCSource"/>
     </comp>
-    <comp lib="7" loc="(779,1774)" name="Text">
+    <comp lib="7" loc="(775,1770)" name="Text">
       <a name="font" val="SansSerif bold 18"/>
       <a name="text" val="syscall lee $a0 (4)"/>
     </comp>
@@ -4586,7 +4580,7 @@ $zero: enable fijo a 0, siempre vale 0</a>
     <comp lib="7" loc="(935,1435)" name="Text">
       <a name="text" val="Mux de WriteReg"/>
     </comp>
-    <comp lib="7" loc="(963,1262)" name="Text">
+    <comp lib="7" loc="(960,1260)" name="Text">
       <a name="font" val="SansSerif bold 18"/>
       <a name="text" val="Mux de MemToReg"/>
     </comp>
@@ -4601,8 +4595,8 @@ $zero: enable fijo a 0, siempre vale 0</a>
     <wire from="(1070,410)" to="(1140,410)"/>
     <wire from="(1070,440)" to="(1140,440)"/>
     <wire from="(1070,470)" to="(1090,470)"/>
-    <wire from="(1070,510)" to="(1120,510)"/>
-    <wire from="(1070,580)" to="(1120,580)"/>
+    <wire from="(1070,510)" to="(1090,510)"/>
+    <wire from="(1070,580)" to="(1100,580)"/>
     <wire from="(110,1230)" to="(110,1410)"/>
     <wire from="(110,1230)" to="(660,1230)"/>
     <wire from="(110,1410)" to="(110,1560)"/>
@@ -6694,19 +6688,19 @@ Illegal | 1 bit (1 si la instrucción no pertenece a la lista S-MIPS)</a>
     <comp lib="7" loc="(1295,625)" name="Text">
       <a name="text" val="S_HALT"/>
     </comp>
-    <comp lib="7" loc="(2092,716)" name="Text">
+    <comp lib="7" loc="(2090,715)" name="Text">
       <a name="text" val="0=ADD 1=ALUOp"/>
     </comp>
     <comp lib="7" loc="(240,1180)" name="Text">
       <a name="font" val="SansSerif bold 11"/>
       <a name="text" val="S_EX_M"/>
     </comp>
+    <comp lib="7" loc="(395,1055)" name="Text">
+      <a name="text" val="$v0 = 10: terminar"/>
+    </comp>
     <comp lib="7" loc="(395,1190)" name="Text">
       <a name="font" val="SansSerif bold 11"/>
       <a name="text" val="S_BR"/>
-    </comp>
-    <comp lib="7" loc="(398,1056)" name="Text">
-      <a name="text" val="$v0 = 10: terminar"/>
     </comp>
     <comp lib="7" loc="(500,390)" name="Text">
       <a name="font" val="SansSerif bold 11"/>
@@ -6751,13 +6745,13 @@ S13 = S_HALT (13)</a>
       <a name="font" val="SansSerif bold 11"/>
       <a name="text" val="S_IF"/>
     </comp>
-    <comp lib="7" loc="(658,240)" name="Text">
+    <comp lib="7" loc="(655,240)" name="Text">
       <a name="text" val="Próximo estado: cada entrada es el estado actual"/>
     </comp>
-    <comp lib="7" loc="(696,111)" name="Text">
+    <comp lib="7" loc="(695,110)" name="Text">
       <a name="text" val="ESTADO ACTUAL"/>
     </comp>
-    <comp lib="7" loc="(732,1060)" name="Text">
+    <comp lib="7" loc="(730,1060)" name="Text">
       <a name="text" val="$v0 = 11: imprimir"/>
     </comp>
     <comp lib="7" loc="(770,1220)" name="Text">
@@ -7101,52 +7095,62 @@ S13 = S_HALT (13)</a>
     <a name="circuit" val="Branch_Control"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
     <a name="simulationFrequency" val="1.0"/>
-    <comp lib="0" loc="(1070,150)" name="Pin">
+    <comp lib="0" loc="(1090,250)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="PCWriteFinal"/>
       <a name="type" val="output"/>
     </comp>
-    <comp lib="0" loc="(200,170)" name="Pin">
+    <comp lib="0" loc="(220,270)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="PCWrite"/>
     </comp>
-    <comp lib="0" loc="(200,220)" name="Pin">
+    <comp lib="0" loc="(220,320)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="PCWriteCond"/>
     </comp>
-    <comp lib="0" loc="(200,270)" name="Pin">
+    <comp lib="0" loc="(220,370)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="IsBeq"/>
     </comp>
-    <comp lib="0" loc="(200,320)" name="Pin">
+    <comp lib="0" loc="(220,420)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="IsBne"/>
     </comp>
-    <comp lib="0" loc="(200,370)" name="Pin">
+    <comp lib="0" loc="(220,470)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="label" val="Zero"/>
     </comp>
-    <comp lib="0" loc="(240,170)" name="Tunnel">
+    <comp lib="0" loc="(260,270)" name="Tunnel">
       <a name="label" val="PCWrite"/>
     </comp>
-    <comp lib="0" loc="(860,130)" name="Tunnel">
+    <comp lib="0" loc="(880,230)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="PCWrite"/>
     </comp>
-    <comp lib="1" loc="(1000,150)" name="OR Gate"/>
-    <comp lib="1" loc="(430,270)" name="NOT Gate"/>
-    <comp lib="1" loc="(520,190)" name="AND Gate"/>
-    <comp lib="1" loc="(520,290)" name="AND Gate"/>
-    <comp lib="1" loc="(650,210)" name="OR Gate"/>
-    <comp lib="1" loc="(800,370)" name="AND Gate"/>
-    <comp lib="7" loc="(1160,100)" name="Text">
-      <a name="font" val="SansSerif bold 10"/>
+    <comp lib="1" loc="(1020,250)" name="OR Gate"/>
+    <comp lib="1" loc="(450,370)" name="NOT Gate"/>
+    <comp lib="1" loc="(540,290)" name="AND Gate"/>
+    <comp lib="1" loc="(540,390)" name="AND Gate"/>
+    <comp lib="1" loc="(670,310)" name="OR Gate"/>
+    <comp lib="1" loc="(820,470)" name="AND Gate"/>
+    <comp lib="7" loc="(1135,195)" name="Text">
       <a name="text">PCWriteFinal | 1 bit (Va directamente a la habilitación de carga Enable del registro PC en el Datapath)
 </a>
     </comp>
-    <comp lib="7" loc="(225,50)" name="Text">
-      <a name="font" val="SansSerif bold 10"/>
+    <comp lib="7" loc="(390,555)" name="Text">
+      <a name="font" val="SansSerif bold 17"/>
+      <a name="text">Lógica BEQ: BeqTaken = IsBeq AND Zero 
+Lógica BNE: BneTaken = IsBne AND (NOT Zero) 
+Branch Tomado: BranchTaken = BeqTaken OR BneTaken
+Condición de Salto: BranchWrite = PCWriteCond AND BranchTaken 
+Decisión Final: PCWriteFinal=PCWrite OR BranchWrite</a>
+    </comp>
+    <comp lib="7" loc="(490,245)" name="Text">
+      <a name="text" val="BeqTaken"/>
+    </comp>
+    <comp lib="7" loc="(495,55)" name="Text">
+      <a name="font" val="SansSerif bold 17"/>
       <a name="text">PCWrite | 1 bit (Viene de la FSM: 1 indica que hay que escribir el PC obligatoriamente)
 PCWriteCond | 1 bit (Viene de la FSM: 1 indica que estamos evaluando un branch)
 IsBeq | 1 bit (Viene del Decoder: 1 si es beq)
@@ -7154,55 +7158,44 @@ IsBne | 1 bit (Viene del Decoder: 1 si es bne)
 Zero | 1 bit (Viene de la ALU: 1 si la resta de $rs - $rt dio 0)
 </a>
     </comp>
-    <comp lib="7" loc="(345,570)" name="Text">
-      <a name="font" val="SansSerif bold 10"/>
-      <a name="text">Lógica BEQ: BeqTaken = IsBeq AND Zero 
-Lógica BNE: BneTaken = IsBne AND (NOT Zero) 
-Branch Tomado: BranchTaken = BeqTaken OR BneTaken
-Condición de Salto: BranchWrite = PCWriteCond AND BranchTaken 
-Decisión Final: PCWriteFinal=PCWrite OR BranchWrite</a>
-    </comp>
-    <comp lib="7" loc="(470,145)" name="Text">
-      <a name="text" val="BeqTaken"/>
-    </comp>
-    <comp lib="7" loc="(490,255)" name="Text">
+    <comp lib="7" loc="(510,355)" name="Text">
       <a name="text" val="BneTaken"/>
     </comp>
-    <comp lib="7" loc="(635,175)" name="Text">
+    <comp lib="7" loc="(655,275)" name="Text">
       <a name="text" val="BranchTaken"/>
     </comp>
-    <comp lib="7" loc="(770,330)" name="Text">
+    <comp lib="7" loc="(790,430)" name="Text">
       <a name="text" val="BranchWrite"/>
     </comp>
-    <wire from="(1000,150)" to="(1070,150)"/>
-    <wire from="(200,170)" to="(240,170)"/>
-    <wire from="(200,220)" to="(320,220)"/>
-    <wire from="(200,270)" to="(340,270)"/>
-    <wire from="(200,320)" to="(440,320)"/>
-    <wire from="(200,370)" to="(360,370)"/>
-    <wire from="(320,220)" to="(320,350)"/>
-    <wire from="(320,350)" to="(750,350)"/>
-    <wire from="(340,170)" to="(340,270)"/>
-    <wire from="(340,170)" to="(470,170)"/>
-    <wire from="(360,210)" to="(360,270)"/>
-    <wire from="(360,210)" to="(470,210)"/>
+    <wire from="(1020,250)" to="(1090,250)"/>
+    <wire from="(220,270)" to="(260,270)"/>
+    <wire from="(220,320)" to="(340,320)"/>
+    <wire from="(220,370)" to="(360,370)"/>
+    <wire from="(220,420)" to="(460,420)"/>
+    <wire from="(220,470)" to="(380,470)"/>
+    <wire from="(340,320)" to="(340,450)"/>
+    <wire from="(340,450)" to="(770,450)"/>
     <wire from="(360,270)" to="(360,370)"/>
-    <wire from="(360,270)" to="(400,270)"/>
-    <wire from="(430,270)" to="(470,270)"/>
-    <wire from="(440,310)" to="(440,320)"/>
-    <wire from="(440,310)" to="(470,310)"/>
-    <wire from="(520,190)" to="(600,190)"/>
-    <wire from="(520,290)" to="(570,290)"/>
-    <wire from="(570,230)" to="(570,290)"/>
-    <wire from="(570,230)" to="(600,230)"/>
-    <wire from="(650,210)" to="(680,210)"/>
-    <wire from="(680,210)" to="(680,390)"/>
-    <wire from="(680,390)" to="(750,390)"/>
-    <wire from="(800,370)" to="(860,370)"/>
-    <wire from="(860,130)" to="(950,130)"/>
-    <wire from="(860,250)" to="(860,370)"/>
-    <wire from="(860,250)" to="(940,250)"/>
-    <wire from="(940,170)" to="(940,250)"/>
-    <wire from="(940,170)" to="(950,170)"/>
+    <wire from="(360,270)" to="(490,270)"/>
+    <wire from="(380,310)" to="(380,370)"/>
+    <wire from="(380,310)" to="(490,310)"/>
+    <wire from="(380,370)" to="(380,470)"/>
+    <wire from="(380,370)" to="(420,370)"/>
+    <wire from="(450,370)" to="(490,370)"/>
+    <wire from="(460,410)" to="(460,420)"/>
+    <wire from="(460,410)" to="(490,410)"/>
+    <wire from="(540,290)" to="(620,290)"/>
+    <wire from="(540,390)" to="(590,390)"/>
+    <wire from="(590,330)" to="(590,390)"/>
+    <wire from="(590,330)" to="(620,330)"/>
+    <wire from="(670,310)" to="(700,310)"/>
+    <wire from="(700,310)" to="(700,490)"/>
+    <wire from="(700,490)" to="(770,490)"/>
+    <wire from="(820,470)" to="(880,470)"/>
+    <wire from="(880,230)" to="(970,230)"/>
+    <wire from="(880,350)" to="(880,470)"/>
+    <wire from="(880,350)" to="(960,350)"/>
+    <wire from="(960,270)" to="(960,350)"/>
+    <wire from="(960,270)" to="(970,270)"/>
   </circuit>
 </project>
